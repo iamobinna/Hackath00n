@@ -101,68 +101,71 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
         bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
     # Calculate total calories per day needed
     if age < 30:
-        total_calories_needed = bmr * 1.55  
+        total_calories_needed = bmr * 1.55  # Assuming moderate activity level for young adults
     else:
-        total_calories_needed = bmr * 1.375  
+        total_calories_needed = bmr * 1.375  # Assuming light activity level for adults
     # Display total calories per day needed
-    st.subheader("Total Calories per Day Needed")
+
+    st.subheader("This friendly Advice is coming from Obi, Mau & Jorge")
     st.write(f"You need {total_calories_needed:.2f} kcal/day")
     # Generate advice based on user information
     advice = generate_advice(age, weight, gender, height)
     # Display advice
-    st.subheader("Our humble advice")
+    
     st.write(advice)
 
     # Display food items with checkboxes
-    st.subheader("Select Choice Food Items:")
-   
+    st.subheader("Select Food Items:")
     st.write(df)
 
-    # Divide the selected food items into 4 columns
     selected_items = []
-    column_count = 4
-    items_per_column = len(df) // column_count
-    remaining_items = len(df) % column_count
-    index = 0
 
-    for i in range(column_count):
-        if remaining_items > 0:
-            column_items = st.columns(items_per_column + 1)
-            remaining_items -= 1
-        else:
-            column_items = st.columns(items_per_column)
-        for j in range(items_per_column):
-            checkbox_state = column_items[j].checkbox(df['Food'][index], key=f'{df["Food"][index]}_{index}_checkbox')
+    with st.form(key='select_food_items_form'):
+        col1, col2, col3, col4 = st.columns(4)
+        cols = [col1, col2, col3, col4]
+
+        for index, row in df.iterrows():
+            checkbox_state = cols[index % 4].checkbox(row['Food'], key=f"{row['Food']}_{index}_checkbox")
             if checkbox_state:
-                selected_items.append(df['Food'][index])
-            index += 1
+                selected_items.append(row)
+        submit_button = st.form_submit_button(label='Submit')
 
-    if remaining_items > 0:
-        for i in range(remaining_items):
-            checkbox_state = column_items[-1].checkbox(df['Food'][index], key=f'{df["Food"][index]}_{index}_checkbox')
-            if checkbox_state:
-                selected_items.append(df['Food'][index])
-            index += 1
-
+        if submit_button:
+            total_calories_selected = 0
+            for item in selected_items:
+                weight_in_grams = item.get('Weight(g)', None)
+                calories_per_100g = item.get('Calories/100g', None)
+                if weight_in_grams is not None and calories_per_100g is not None:
+                    try:
+                        weight_in_grams = float(weight_in_grams)
+                        calories_per_100g = float(calories_per_100g)
+                        food_calories = (weight_in_grams / 100) * calories_per_100g
+                        total_calories_selected += food_calories
+                    except ValueError:
+                        st.warning(f"Invalid parameter value for food '{item['Food']}'")
+                else:
+                    st.warning(f"Missing parameter for food '{item['Food']}'")
+            st.subheader("Total Calories of Selected Items:")
+            st.write(f"{total_calories_selected:.2f} kcal")
 
 
 def generate_advice(age, weight, gender, height):
-    advice = "This is some friendly advice based on your uploaded content:"
+    advice = "and based on your uploaded content,"
     # Calculate BMR based on gender
     if gender == "Male":
         bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
     else:
         bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
     if age < 30:
-        advice += "\n- Yeah we know you're young, so we advice you focus on building healthy eating habits early on."
+        advice += " yeah we know you're young, so we advice you focus on building healthy eating habits early on."
     else:
-        advice += "\n- This looks good so make sure to maintain a balanced diet to support your overall health and enjoy the benefits."
+        advice += " it looks good so far just make sure to maintain a balanced diet to support your overall health and enjoy the benefits."
     # Adjust advice based on BMI and BMR
     bmi = weight / ((height / 100) ** 2)
     if bmi > 25:
-        advice += "\n- Uhm consider reducing your calorie intake to achieve a healthy BMI and overall health."
-    if bmr < 1200:  # Considering a very low BMR
-        advice += "\n- It seems your Basal Metabolic Rate (BMR) is very low. Please you should consider consulting a healthcare professional."
+        advice += " uhm consider reducing your calorie intake, eat more veggies and proteins to achieve a healthy BMI and overall wellness in body and mind."
+    if bmr < 1200:  
+        advice += " it seems your Basal Metabolic Rate (BMR) is very low. Please you should consider consulting a healthcare professional."
     return advice
 
 if __name__ == "__main__":
