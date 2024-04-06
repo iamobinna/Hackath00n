@@ -89,10 +89,10 @@ def process_pdf(uploaded_file, name, age, weight, gender, height):
             data['Calorie Content'].append(parts[2].strip())
     df = pd.DataFrame(data)
 
-    st.write("Extracted Data from PDF:")
-    st.write(df)
+   
 
     show_summary_and_advice(df, name, age, weight, gender, height)
+
 
 
 def show_summary_and_advice(df, name, age, weight, gender, height):
@@ -120,24 +120,41 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
     st.write("DataFrame before selecting food items:")
     st.write(df)
 
-    selected_items = st.checkbox(df['Food'], key='checkbox')
-    selected_calories = 0
-    for index, row in df.iterrows():
-        if row['Food'] in selected_items:
-            weight_in_grams = row.get('Weight(g)', None)
-            calories_per_100g = row.get('Calories/100g', None)
-            if weight_in_grams is not None and calories_per_100g is not None:
-                try:
-                    weight_in_grams = float(weight_in_grams)
-                    calories_per_100g = float(calories_per_100g)
-                    food_calories = (weight_in_grams / 100) * calories_per_100g
-                    selected_calories += food_calories
-                except ValueError:
-                    st.warning(f"Invalid parameter value for food '{row['Food']}'")
-            else:
-                st.warning(f"Missing parameter for food '{row['Food']}'")
-    st.subheader("Total Calories of Selected Items:")
-    st.write(f"{selected_calories:.2f} kcal")
+    # Divide the selected food items into 4 columns
+    selected_items = []
+    column_count = 4
+    items_per_column = len(df) // column_count
+    remaining_items = len(df) % column_count
+    index = 0
+
+    for i in range(column_count):
+        if remaining_items > 0:
+            column_items = st.columns(items_per_column + 1)
+            remaining_items -= 1
+        else:
+            column_items = st.columns(items_per_column)
+        for j in range(items_per_column):
+            checkbox_state = column_items[j].checkbox(df['Food'][index], key=f'{df["Food"][index]}_{index}_checkbox')
+            if checkbox_state:
+                selected_items.append(df['Food'][index])
+            index += 1
+
+    if remaining_items > 0:
+        for i in range(remaining_items):
+            checkbox_state = column_items[-1].checkbox(df['Food'][index], key=f'{df["Food"][index]}_{index}_checkbox')
+            if checkbox_state:
+                selected_items.append(df['Food'][index])
+            index += 1
+
+    # Display the selected food items
+    st.subheader("Selected Food Items:")
+    for item in selected_items:
+        st.write(item)
+
+# Rest of the code remains the same...
+
+
+
 
 def generate_advice(age, weight, gender, height):
     advice = "Here is some advice based on your information:"
