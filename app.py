@@ -112,12 +112,12 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
     # Generate advice based on user information
     advice = generate_advice(age, weight, gender, height)
     # Display advice
-    st.subheader("Advice")
+    st.subheader("Our humble advice")
     st.write(advice)
 
     # Display food items with checkboxes
-    st.subheader("Select Food Items:")
-    st.write("DataFrame before selecting food items:")
+    st.subheader("Select Choice Food Items:")
+    # st.write("Selecting food items...")
     st.write(df)
 
     # Divide the selected food items into 4 columns
@@ -157,22 +157,22 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
 
 
 def generate_advice(age, weight, gender, height):
-    advice = "Here is some advice based on your information:"
+    advice = "This is some friendly advice based on your uploaded content:"
     # Calculate BMR based on gender
     if gender == "Male":
         bmr = 66 + (13.7 * weight) + (5 * height) - (6.8 * age)
     else:
         bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
     if age < 30:
-        advice += "\n- You are young, so focus on building healthy eating habits early."
+        advice += "\n- Yeah we know you're young, so we advice you focus on building healthy eating habits early on."
     else:
-        advice += "\n- Make sure to maintain a balanced diet to support your overall health."
+        advice += "\n- This looks good so make sure to maintain a balanced diet to support your overall health and enjoy the benefits."
     # Adjust advice based on BMI and BMR
     bmi = weight / ((height / 100) ** 2)
     if bmi > 25:
-        advice += "\n- Consider reducing your calorie intake to achieve a healthy BMI."
+        advice += "\n- Uhm consider reducing your calorie intake to achieve a healthy BMI and overall health."
     if bmr < 1200:  # Considering a very low BMR
-        advice += "\n- Your Basal Metabolic Rate (BMR) seems very low. Please consult a healthcare professional."
+        advice += "\n- It seems your Basal Metabolic Rate (BMR) is very low. Please you should consider consulting a healthcare professional."
     return advice
 
 if __name__ == "__main__":
