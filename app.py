@@ -93,8 +93,6 @@ def process_pdf(uploaded_file, name, age, weight, gender, height):
 
     show_summary_and_advice(df, name, age, weight, gender, height)
 
-
-
 def show_summary_and_advice(df, name, age, weight, gender, height):
     # Calculate BMR based on gender
     if gender == "Male":
@@ -103,12 +101,12 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
         bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
     # Calculate total calories per day needed
     if age < 30:
-        total_calories_needed = bmr * 1.55  # Assuming moderate activity level for young adults
+        total_calories_needed = bmr * 1.55  
     else:
-        total_calories_needed = bmr * 1.375  # Assuming light activity level for adults
+        total_calories_needed = bmr * 1.375  
     # Display total calories per day needed
     st.subheader("Total Calories per Day Needed")
-    st.write(f"{total_calories_needed:.2f} kcal/day")
+    st.write(f"You need {total_calories_needed:.2f} kcal/day")
     # Generate advice based on user information
     advice = generate_advice(age, weight, gender, height)
     # Display advice
@@ -117,7 +115,7 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
 
     # Display food items with checkboxes
     st.subheader("Select Choice Food Items:")
-    # st.write("Selecting food items...")
+   
     st.write(df)
 
     # Divide the selected food items into 4 columns
@@ -145,14 +143,6 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
             if checkbox_state:
                 selected_items.append(df['Food'][index])
             index += 1
-
-    # Display the selected food items
-    st.subheader("Selected Food Items:")
-    for item in selected_items:
-        st.write(item)
-
-# Rest of the code remains the same...
-
 
 
 
