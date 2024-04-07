@@ -25,9 +25,9 @@ def main():
 
     if st.button("Process the data"):
         if not (name and age and weight and gender and height):
-            st.error("Please fill in your details.")
+            st.error("Please fill in your details")
         elif not uploaded_file:
-            st.error("Now kindly upload a file.")
+            st.error("Now kindly upload a file")
         else:
             if uploaded_file.type == "text/csv":
                 df = pd.read_csv(uploaded_file)
@@ -35,7 +35,7 @@ def main():
             elif uploaded_file.type == "application/pdf":
                 process_pdf(uploaded_file, name, age, weight, gender, height)
             else:
-                st.error("This is an unsupported file format, upload either a CSV or PDF file.")
+                st.error("Oops!! This is an unsupported file format, upload either a CSV or PDF file.")
 
 def process_csv(df):
     st.write("Processing CSV file...")
