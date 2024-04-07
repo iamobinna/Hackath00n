@@ -11,19 +11,19 @@ def main():
     with col1:
         name = st.text_input("Name")
         age = st.number_input("Age")
-        weight = st.number_input("Weight (kg)")
+        weight = st.number_input("Weight (in kg)")
     with col2:
         gender = st.selectbox("Gender", ["Male", "Female", "Other"])
-        height = st.number_input("Height (cm)")
+        height = st.number_input("Height (in cm)")
 
     # File selection
-    uploaded_file = st.file_uploader("Upload Recipe Book", type=["pdf", "csv"])
+    uploaded_file = st.file_uploader("Upload Food/Recipe Book", type=["pdf", "csv"])
 
     if uploaded_file:
-        st.write("File Uploaded")
+        st.write("Your file has been uploaded")
         st.write(f"File Type: {uploaded_file.type}")
 
-    if st.button("Process"):
+    if st.button("Process the data"):
         if not (name and age and weight and gender and height):
             st.error("Please fill in your details.")
         elif not uploaded_file:
@@ -35,7 +35,7 @@ def main():
             elif uploaded_file.type == "application/pdf":
                 process_pdf(uploaded_file, name, age, weight, gender, height)
             else:
-                st.error("Unsupported file format. Please upload a CSV or PDF file.")
+                st.error("This is an unsupported file format, upload either a CSV or PDF file.")
 
 def process_csv(df):
     st.write("Processing CSV file...")
@@ -89,8 +89,6 @@ def process_pdf(uploaded_file, name, age, weight, gender, height):
             data['Calorie Content'].append(parts[2].strip())
     df = pd.DataFrame(data)
 
-   
-
     show_summary_and_advice(df, name, age, weight, gender, height)
 
 def show_summary_and_advice(df, name, age, weight, gender, height):
@@ -107,7 +105,7 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
     # Display total calories per day needed
 
     st.subheader("This friendly Advice is coming from Obi, Mau & Jorge")
-    st.write(f"You need {total_calories_needed:.2f} kcal/day")
+    st.write(f"Hey {name}, you need {total_calories_needed:.2f} kcal/day")
     # Generate advice based on user information
     advice = generate_advice(age, weight, gender, height)
     # Display advice
@@ -115,7 +113,7 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
     st.write(advice)
 
     # Display food items with checkboxes
-    st.subheader("Select Food Items:")
+    st.subheader("Here, you can select specific food Items:")
     st.write(df)
 
     selected_items = []
@@ -128,7 +126,7 @@ def show_summary_and_advice(df, name, age, weight, gender, height):
             checkbox_state = cols[index % 4].checkbox(row['Food'], key=f"{row['Food']}_{index}_checkbox")
             if checkbox_state:
                 selected_items.append(row)
-        submit_button = st.form_submit_button(label='Submit')
+        submit_button = st.form_submit_button(label='Check calorie content')
 
         if submit_button:
             total_calories_selected = 0
@@ -157,7 +155,7 @@ def generate_advice(age, weight, gender, height):
     else:
         bmr = 655 + (9.6 * weight) + (1.8 * height) - (4.7 * age)
     if age < 30:
-        advice += " yeah we know you're young, so we advice you focus on building healthy eating habits early on."
+        advice += " yeah we know you're young, so we advice you focus on building healthy eating habits early on as this would help you live longer and better."
     else:
         advice += " it looks good so far just make sure to maintain a balanced diet to support your overall health and enjoy the benefits."
     # Adjust advice based on BMI and BMR
